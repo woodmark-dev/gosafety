@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "GoSafety Workflow",
+    "description": "Happy-path workflow for create -> evaluate -> assign -> resolve -> manager-confirm -> close.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "DB Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health/db",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health", "db"]
+        }
+      }
+    },
+    {
+      "name": "Create Incident",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Create incident returns 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('incidentId', body.id);",
+              "pm.collectionVariables.set('incidentNo', body.incidentNo);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Oil spill near loading bay\",\n  \"description\": \"Observed fresh spill close to forklift path\",\n  \"reporterUserId\": \"{{reporterUserId}}\",\n  \"siteId\": \"{{siteId}}\",\n  \"latitude\": 6.5244,\n  \"longitude\": 3.3792,\n  \"sourceChannel\": \"mobile\",\n  \"actorUserId\": \"{{reporterUserId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents"]
+        }
+      }
+    },
+    {
+      "name": "Evaluate Incident",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"evaluatorUserId\": \"{{evaluatorUserId}}\",\n  \"actorUserId\": \"{{evaluatorUserId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"severityId\": \"{{severityId}}\",\n  \"assignedTeamId\": \"{{assignedTeamId}}\",\n  \"evaluationNotes\": \"Initial triage completed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents/{{incidentId}}/evaluate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents", "{{incidentId}}", "evaluate"]
+        }
+      }
+    },
+    {
+      "name": "Assign Incident",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignedTeamId\": \"{{assignedTeamId}}\",\n  \"assignedUserId\": \"{{fulfillmentUserId}}\",\n  \"assignedByUserId\": \"{{evaluatorUserId}}\",\n  \"actorUserId\": \"{{evaluatorUserId}}\",\n  \"assignmentNotes\": \"Urgent cleanup required\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents/{{incidentId}}/assign",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents", "{{incidentId}}", "assign"]
+        }
+      }
+    },
+    {
+      "name": "Resolve Incident",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resolvedByUserId\": \"{{fulfillmentUserId}}\",\n  \"actorUserId\": \"{{fulfillmentUserId}}\",\n  \"resolutionSummary\": \"Spill cleaned and absorbent material replaced\",\n  \"completionEvidence\": {\n    \"photos\": [\"after-cleanup-1.jpg\"],\n    \"notes\": \"Area cordoned during cleanup\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents/{{incidentId}}/resolve",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents", "{{incidentId}}", "resolve"]
+        }
+      }
+    },
+    {
+      "name": "Manager Confirm",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"managerUserId\": \"{{managerUserId}}\",\n  \"actorUserId\": \"{{managerUserId}}\",\n  \"confirmationResult\": \"approved\",\n  \"comments\": \"Verified on-site. Accepting resolution.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents/{{incidentId}}/manager-confirm",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents", "{{incidentId}}", "manager-confirm"]
+        }
+      }
+    },
+    {
+      "name": "Close Incident",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"closedByUserId\": \"{{evaluatorUserId}}\",\n  \"actorUserId\": \"{{evaluatorUserId}}\",\n  \"closureNotes\": \"Final HSE close-out completed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents/{{incidentId}}/close",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents", "{{incidentId}}", "close"]
+        }
+      }
+    },
+    {
+      "name": "List Incidents",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/incidents",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "incidents"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "incidentId",
+      "value": ""
+    },
+    {
+      "key": "incidentNo",
+      "value": ""
+    },
+    {
+      "key": "reporterUserId",
+      "value": ""
+    },
+    {
+      "key": "evaluatorUserId",
+      "value": ""
+    },
+    {
+      "key": "fulfillmentUserId",
+      "value": ""
+    },
+    {
+      "key": "managerUserId",
+      "value": ""
+    },
+    {
+      "key": "assignedTeamId",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": ""
+    },
+    {
+      "key": "severityId",
+      "value": ""
+    },
+    {
+      "key": "siteId",
+      "value": ""
+    }
+  ]
+}

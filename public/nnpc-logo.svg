@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 633 407" role="img" aria-labelledby="title desc">
+  <title id="title">NNPC Logo</title>
+  <desc id="desc">NNPC mark with yellow, green, and red geometric planes and NNPC wordmark.</desc>
+  <rect width="633" height="407" fill="#213747"/>
+  <polygon points="70,149 132,168 132,307 70,338" fill="#F7EA00"/>
+  <polygon points="132,97 315,149 315,305 132,252" fill="#2C7A4D"/>
+  <polygon points="132,252 315,149 315,306" fill="#0AB24F"/>
+  <polygon points="132,252 254,273 254,358 132,306" fill="#EE1218"/>
+  <text x="328" y="274" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="86" font-weight="700" letter-spacing="1">NNPC</text>
+</svg>
