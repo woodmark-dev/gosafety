@@ -295,25 +295,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span>Report</span>
           </Link>
 
-          <button
-            type="button"
-            className="flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-slate-500"
-            aria-label="Help Center"
-          >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <circle cx="10" cy="10" r="7" />
-              <path d="M8.2 7.7a2 2 0 0 1 3.6 1.1c0 1.6-1.8 1.9-1.8 3" />
-              <circle cx="10" cy="13.8" r="0.9" fill="currentColor" stroke="none" />
-            </svg>
-            <span>Help Center</span>
-          </button>
-
           <Link
             href="/dashboard/profile"
             className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium ${
@@ -333,6 +314,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </svg>
             <span>My Profile</span>
           </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              void handleLogout();
+            }}
+            disabled={loggingOut}
+            className="flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-slate-500 disabled:opacity-60"
+            aria-label="Logout"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M12.5 4.5h-5a1.5 1.5 0 0 0-1.5 1.5v8a1.5 1.5 0 0 0 1.5 1.5h5" />
+              <path d="M11 10h6" />
+              <path d="m14.5 7 2.5 3-2.5 3" />
+            </svg>
+            <span>{loggingOut ? "Logging out..." : "Logout"}</span>
+          </button>
         </div>
       </nav>
     </div>

@@ -32,6 +32,31 @@ import type {
 type Step = 1 | 2 | 3 | 4 | 5;
 const STALE_SYNC_MS = 2 * 60 * 1000;
 
+const OFFLINE_LOOKUPS: {
+  categories: LookupOption[];
+  severities: LookupOption[];
+  sites: SiteOption[];
+} = {
+  categories: [
+    { id: "unsafe_condition", code: "unsafe_condition", name: "Unsafe Condition" },
+    { id: "near_miss", code: "near_miss", name: "Near Miss" },
+    { id: "injury", code: "injury", name: "Injury" },
+    { id: "environmental", code: "environmental", name: "Environmental" },
+    { id: "property_damage", code: "property_damage", name: "Property Damage" },
+  ],
+  severities: [
+    { id: "low", code: "low", name: "Low" },
+    { id: "medium", code: "medium", name: "Medium" },
+    { id: "high", code: "high", name: "High" },
+    { id: "critical", code: "critical", name: "Critical" },
+  ],
+  sites: [
+    { id: "manual-nnpc-towers", site_code: "NNPC_TOWERS", site_name: "NNPC Towers" },
+    { id: "manual-rti-nexus", site_code: "RTI_NEXUS", site_name: "RTI Nexus" },
+    { id: "manual-krpc", site_code: "KRPC", site_name: "KRPC" },
+  ],
+};
+
 type SpeechRecognitionLike = {
   continuous: boolean;
   interimResults: boolean;
@@ -132,11 +157,7 @@ export default function IncidentReportWizard() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [queueCount, setQueueCount] = useState(0);
-  const [lookups, setLookups] = useState<{
-    categories: LookupOption[];
-    severities: LookupOption[];
-    sites: SiteOption[];
-  }>({ categories: [], severities: [], sites: [] });
+  const lookups = OFFLINE_LOOKUPS;
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
   const [listening, setListening] = useState(false);
   const [postSubmitState, setPostSubmitState] = useState<PostSubmitState>(null);
@@ -341,35 +362,6 @@ export default function IncidentReportWizard() {
       createdObjectUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [draft]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchLookups() {
-      const response = await fetch("/api/report/lookups");
-      if (!response.ok) {
-        throw new Error("Failed to load categories, severities, and sites");
-      }
-      const data = await response.json();
-      if (!cancelled) {
-        setLookups({
-          categories: data.categories ?? [],
-          severities: data.severities ?? [],
-          sites: data.sites ?? [],
-        });
-      }
-    }
-
-    fetchLookups().catch((e) => {
-      if (!cancelled) {
-        setError(e instanceof Error ? e.message : "Failed to load lookups");
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     return () => {

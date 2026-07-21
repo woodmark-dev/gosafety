@@ -58,6 +58,71 @@ function normalizePreferredContactChannel(value?: string | null) {
   return null;
 }
 
+async function resolveLookupIdByCodeOrUuid(
+  client: {
+    query: (text: string, values?: unknown[]) => Promise<{ rows: Array<{ id: string }> }>;
+  },
+  value: string | undefined,
+  kind: "category" | "severity"
+) {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    throw new SubmitValidationError(`${kind === "category" ? "Category" : "Severity"} is required`);
+  }
+
+  const byIdQuery =
+    kind === "category"
+      ? `
+        SELECT id
+        FROM incident_categories
+        WHERE id = $1
+          AND is_active = true
+          AND deleted_at IS NULL
+        LIMIT 1
+      `
+      : `
+        SELECT id
+        FROM severity_levels
+        WHERE id = $1
+          AND is_active = true
+        LIMIT 1
+      `;
+
+  const byCodeQuery =
+    kind === "category"
+      ? `
+        SELECT id
+        FROM incident_categories
+        WHERE lower(code) = lower($1)
+          AND is_active = true
+          AND deleted_at IS NULL
+        LIMIT 1
+      `
+      : `
+        SELECT id
+        FROM severity_levels
+        WHERE lower(code) = lower($1)
+          AND is_active = true
+        LIMIT 1
+      `;
+
+  if (UUID_RE.test(trimmed)) {
+    const byId = await client.query(byIdQuery, [trimmed]);
+    if (byId.rows[0]?.id) {
+      return byId.rows[0].id;
+    }
+  }
+
+  const byCode = await client.query(byCodeQuery, [trimmed]);
+  if (byCode.rows[0]?.id) {
+    return byCode.rows[0].id;
+  }
+
+  throw new SubmitValidationError(
+    `Selected ${kind} is invalid. Please reselect ${kind} and try again.`
+  );
+}
+
 export async function POST(request: Request) {
   try {
     const cookieHeader = request.headers.get("cookie") ?? "";
@@ -239,6 +304,16 @@ export async function POST(request: Request) {
 
       const reportedStatus = await getStatusByCode(client, "reported");
       const draftStatus = await getStatusByCode(client, "draft");
+      const normalizedCategoryId = await resolveLookupIdByCodeOrUuid(
+        client,
+        draft.details.categoryId,
+        "category"
+      );
+      const normalizedSeverityId = await resolveLookupIdByCodeOrUuid(
+        client,
+        draft.details.severityId,
+        "severity"
+      );
 
       const incident = await client.query<{ id: string; incident_no: string }>(
         `
@@ -288,8 +363,8 @@ export async function POST(request: Request) {
           draft.location.lat ?? null,
           draft.location.lng ?? null,
           draft.location.accuracy ?? null,
-          draft.details.categoryId || null,
-          draft.details.severityId || null,
+          normalizedCategoryId,
+          normalizedSeverityId,
           reportedStatus.id,
         ]
       );

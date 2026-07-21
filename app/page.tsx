@@ -62,8 +62,8 @@ export default function Home() {
                 action.
               </h1>
               <p className="mt-3.5 max-w-[570px] text-[14px] leading-[1.45] text-[#d8ece0] md:text-[16px]">
-                Choose your path in seconds. Staff can log in to coordinate operational response,
-                while visitors can report incidents instantly from the field.
+                Choose your path in seconds. Staff can log in to report incidence and coordinate
+                operational response, while visitors can report incidents instantly from the field.
               </p>
 
               <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -80,7 +80,7 @@ export default function Home() {
                         Login as Staff
                       </p>
                       <p className="text-[13px] text-[#d8ece0] md:text-[14px]">
-                        Manage queue, assign teams, track SLAs.
+                        Report incidence, manage queue, assign teams, track SLAs.
                       </p>
                     </div>
                     <span className="mt-1.5 text-[24px] text-white/90">&gt;</span>
