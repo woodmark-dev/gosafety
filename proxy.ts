@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const STAFF_COOKIE = "gosafety_staff_auth";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const isStaff = request.cookies.get(STAFF_COOKIE)?.value === "1";
   const { pathname } = request.nextUrl;
 
