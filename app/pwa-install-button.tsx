@@ -43,16 +43,47 @@ function isInDismissCooldown() {
   return Date.now() - dismissedAt < DISMISS_COOLDOWN_MS;
 }
 
+function isIosDevice() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const userAgent = window.navigator.userAgent || "";
+  const platform = window.navigator.platform || "";
+  const maxTouchPoints = window.navigator.maxTouchPoints || 0;
+
+  const iosByUa = /iPhone|iPad|iPod/i.test(userAgent);
+  const ipadOsByPlatform = platform === "MacIntel" && maxTouchPoints > 1;
+
+  return iosByUa || ipadOsByPlatform;
+}
+
+function isSafariBrowser() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const userAgent = window.navigator.userAgent || "";
+  const isSafari = /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS/i.test(userAgent);
+  return isSafari;
+}
+
 export default function PWAInstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showIosInstructions, setShowIosInstructions] = useState(false);
   const [isDismissed, setIsDismissed] = useState(true);
   const [isInstalling, setIsInstalling] = useState(false);
 
   useEffect(() => {
-    setIsDismissed(isInDismissCooldown());
+    const inCooldown = isInDismissCooldown();
+    setIsDismissed(inCooldown);
 
     if (isStandaloneMode()) {
       return;
+    }
+
+    if (!inCooldown && isIosDevice() && isSafariBrowser()) {
+      setShowIosInstructions(true);
     }
 
     const onBeforeInstallPrompt = (event: Event) => {
@@ -101,9 +132,14 @@ export default function PWAInstallButton() {
     window.localStorage.setItem(INSTALL_PROMPT_DISMISSED_AT_KEY, String(now));
     setIsDismissed(true);
     setDeferredPrompt(null);
+    setShowIosInstructions(false);
   };
 
-  if (!deferredPrompt || isDismissed) {
+  if (isDismissed) {
+    return null;
+  }
+
+  if (!deferredPrompt && !showIosInstructions) {
     return null;
   }
 
@@ -135,14 +171,22 @@ export default function PWAInstallButton() {
           </button>
         </div>
 
-        <Button
-          type="button"
-          onClick={handleInstall}
-          disabled={isInstalling}
-          className="h-10 w-full"
-        >
-          {isInstalling ? "Waiting for confirmation..." : "Install app"}
-        </Button>
+        {deferredPrompt ? (
+          <Button
+            type="button"
+            onClick={handleInstall}
+            disabled={isInstalling}
+            className="h-10 w-full"
+          >
+            {isInstalling ? "Waiting for confirmation..." : "Install app"}
+          </Button>
+        ) : (
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 text-xs text-slate-700">
+            <p className="font-semibold text-slate-900">Install on iPhone/iPad</p>
+            <p className="mt-1">1. Tap the Share button in Safari.</p>
+            <p>2. Scroll and tap Add to Home Screen.</p>
+          </div>
+        )}
       </div>
     </aside>
   );
