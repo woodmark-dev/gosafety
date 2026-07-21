@@ -315,6 +315,14 @@ export async function POST(request: Request) {
       );
 
       for (const photo of draft.photos) {
+        const uploadedReference = photo.publicUrl || photo.serverPath || null;
+        const isInlineDataUrl = Boolean(uploadedReference && uploadedReference.startsWith("data:"));
+
+        // Keep indexed storage_key small; large data URLs break btree index row-size limits.
+        const storageKey = isInlineDataUrl
+          ? `inline:${incident.rows[0].id}:${photo.id}`
+          : uploadedReference || photo.filename;
+
         await client.query(
           `
           INSERT INTO incident_attachments (
@@ -333,10 +341,15 @@ export async function POST(request: Request) {
             incident.rows[0].id,
             photo.filename,
             photo.mimeType,
-            photo.publicUrl || photo.serverPath || photo.filename,
+            storageKey,
             photo.size,
             photo.createdAt,
-            JSON.stringify({ source: photo.source, publicUrl: photo.publicUrl ?? null }),
+            JSON.stringify({
+              source: photo.source,
+              publicUrl: photo.publicUrl ?? null,
+              serverPath: photo.serverPath ?? null,
+              storageMode: isInlineDataUrl ? "inline" : "filesystem",
+            }),
           ]
         );
       }
