@@ -689,6 +689,8 @@ export default function IncidentReportWizard() {
             throw new Error("Reverse geocoding unavailable");
           }
 
+          console.log(await response.json());
+
           const geo = (await response.json()) as {
             formattedAddress?: string;
             locationName?: string;

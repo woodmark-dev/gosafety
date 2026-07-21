@@ -583,8 +583,8 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
 
           {!loading && !error && data ? (
             <>
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-2xl border border-[#e4ebf2] bg-white p-3 md:p-4">
+              <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+                <div className="min-w-0 rounded-2xl border border-[#e4ebf2] bg-white p-3 md:p-4">
                   <h3 className="mb-3 inline-flex items-center gap-2 text-base font-semibold text-slate-900">
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#e9f7ef] text-[#0a7e49]">
                       <svg
@@ -607,7 +607,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                       {data.photos.map((photo) => (
                         <div
                           key={photo.id}
-                          className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white"
+                          className="min-w-0 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white"
                         >
                           {photo.publicUrl ? (
                             <img
@@ -635,7 +635,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                   )}
                 </div>
 
-                <div className="rounded-2xl border border-[#e4ebf2] bg-white p-3 md:p-4">
+                <div className="min-w-0 rounded-2xl border border-[#e4ebf2] bg-white p-3 md:p-4">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     <span className="max-w-full break-all rounded-md bg-[#e8f6ee] px-2 py-1 text-[10px] font-semibold text-[#0f7a45]">
                       {data.incident.incidentNo}
@@ -654,7 +654,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                     {data.incident.title}
                   </h2>
                   <div className="mt-3 space-y-2 text-sm text-slate-700">
-                    <p className="inline-flex items-start gap-2">
+                    <p className="flex min-w-0 items-start gap-2">
                       <svg
                         viewBox="0 0 20 20"
                         className="mt-0.5 h-4 w-4 text-[#0a7e49]"
@@ -665,9 +665,9 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                         <path d="M5 4.5h10v11H5z" />
                         <path d="M7.5 7.5h5M7.5 10h4" />
                       </svg>
-                      <span>{data.incident.description}</span>
+                      <span className="min-w-0 break-words">{data.incident.description}</span>
                     </p>
-                    <p className="inline-flex items-start gap-2">
+                    <p className="flex min-w-0 items-start gap-2">
                       <svg
                         viewBox="0 0 20 20"
                         className="mt-0.5 h-4 w-4 text-[#0a7e49]"
@@ -677,9 +677,11 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                       >
                         <path d="m4 10 3 3 9-9" />
                       </svg>
-                      <span>Category: {data.incident.categoryName ?? "-"}</span>
+                      <span className="min-w-0 break-words">
+                        Category: {data.incident.categoryName ?? "-"}
+                      </span>
                     </p>
-                    <p className="inline-flex items-start gap-2">
+                    <p className="flex min-w-0 items-start gap-2">
                       <svg
                         viewBox="0 0 20 20"
                         className="mt-0.5 h-4 w-4 text-[#64748b]"
@@ -690,7 +692,9 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
                         <rect x="4" y="5" width="12" height="11" rx="1.8" />
                         <path d="M7 3.5v3M13 3.5v3M4 8.5h12" />
                       </svg>
-                      <span>Reported: {new Date(data.incident.reportedAt).toLocaleString()}</span>
+                      <span className="min-w-0 break-words">
+                        Reported: {new Date(data.incident.reportedAt).toLocaleString()}
+                      </span>
                     </p>
                   </div>
                 </div>
