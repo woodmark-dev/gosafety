@@ -13,7 +13,7 @@ export default function Home() {
     <main
       className={`${space.variable} min-h-screen bg-[#f0f2f4] px-0 py-0 text-slate-900 md:px-0 md:py-0`}
     >
-      <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[20px] border border-[#d8dee5] bg-white shadow-[0_24px_65px_-48px_rgba(17,45,71,0.7)] lg:min-h-[calc(100vh-2rem)]">
+      <div className="mx-auto flex min-h-screen max-w-[1380px] flex-col overflow-hidden rounded-[20px] border border-[#d8dee5] bg-white shadow-[0_24px_65px_-48px_rgba(17,45,71,0.7)] lg:min-h-[calc(100vh-2rem)]">
         <header className="flex items-center justify-between border-b border-[#e4e9ef] bg-white px-3 py-2.5 md:px-5 md:py-3">
           <Link
             href="/"
@@ -40,7 +40,7 @@ export default function Home() {
           </Link>
         </header>
 
-        <section className="grid lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.85fr)]">
+        <section className="grid flex-1 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.85fr)]">
           <article className="relative overflow-hidden bg-gradient-to-br from-[#085a35] via-[#00683c] to-[#00492a] px-5 pb-6 pt-8 text-white md:px-8 md:pt-9 lg:pb-7">
             <div className="pointer-events-none absolute -left-8 bottom-10 h-32 w-28 rounded-full border border-emerald-300/15" />
             <div className="pointer-events-none absolute bottom-6 left-4 grid grid-cols-8 gap-1 opacity-30">

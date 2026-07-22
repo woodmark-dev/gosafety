@@ -38,6 +38,23 @@ export default function VisitorDashboardLayout({ children }: { children: React.R
               <p className="text-[10px] text-[#4f5d6c]">Visitor reporting console</p>
             </div>
           </Link>
+
+          <Link
+            href="/visitor/notifications"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e2ec] text-[#355064] transition hover:border-[#c8632f] hover:text-[#c8632f]"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M10 3.6a3.4 3.4 0 00-3.4 3.4v1.1c0 1.8-.4 3.3-1.5 4.4l-.9.9h11.6l-.9-.9c-1.1-1.1-1.5-2.6-1.5-4.4V7A3.4 3.4 0 0010 3.6z" />
+              <path d="M8.2 14.5a1.8 1.8 0 003.6 0" />
+            </svg>
+          </Link>
         </div>
       </div>
 
@@ -67,12 +84,31 @@ export default function VisitorDashboardLayout({ children }: { children: React.R
             })}
           </nav>
 
-          <Link
-            href="/"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-          >
-            Home
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/visitor/notifications"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 transition hover:border-[#c8632f] hover:text-[#c8632f]"
+              aria-label="Notifications"
+            >
+              <svg
+                viewBox="0 0 20 20"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <path d="M10 3.6a3.4 3.4 0 00-3.4 3.4v1.1c0 1.8-.4 3.3-1.5 4.4l-.9.9h11.6l-.9-.9c-1.1-1.1-1.5-2.6-1.5-4.4V7A3.4 3.4 0 0010 3.6z" />
+                <path d="M8.2 14.5a1.8 1.8 0 003.6 0" />
+              </svg>
+            </Link>
+
+            <Link
+              href="/"
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Home
+            </Link>
+          </div>
         </div>
       </div>
 

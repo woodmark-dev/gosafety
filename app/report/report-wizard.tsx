@@ -968,8 +968,8 @@ export default function IncidentReportWizard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] p-3 text-slate-900 md:p-6">
-      <div className="mx-auto w-full max-w-5xl rounded-3xl border border-[#e4e9ef] bg-white shadow-[0_22px_50px_-35px_rgba(18,42,66,0.45)]">
+    <div className="flex min-h-screen flex-col bg-[#f1f5f9] p-3 text-slate-900 md:p-6">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col rounded-3xl border border-[#e4e9ef] bg-white shadow-[0_22px_50px_-35px_rgba(18,42,66,0.45)]">
         <header className="px-5 pb-4 pt-5 md:px-7 md:pt-6">
           <div className="mb-3 flex items-start justify-between">
             <h1 className="text-[34px] font-semibold tracking-tight text-[#0f172a] md:text-[38px]">
@@ -1068,7 +1068,7 @@ export default function IncidentReportWizard() {
           </div>
         </header>
 
-        <section className="space-y-4 px-4 pb-4 md:px-6">
+        <section className="flex-1 space-y-4 px-4 pb-4 md:px-6">
           {step === 1 ? (
             <StepPhotos
               photos={draft.photos}

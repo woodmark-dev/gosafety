@@ -107,25 +107,61 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="text-[10px] text-[#4f5d6c]">Staff incident console</p>
             </div>
           </Link>
+
+          <Link
+            href="/dashboard/notifications"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e2ec] text-[#355064] transition hover:border-[#0a7e49] hover:text-[#0a7e49]"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M10 3.6a3.4 3.4 0 00-3.4 3.4v1.1c0 1.8-.4 3.3-1.5 4.4l-.9.9h11.6l-.9-.9c-1.1-1.1-1.5-2.6-1.5-4.4V7A3.4 3.4 0 0010 3.6z" />
+              <path d="M8.2 14.5a1.8 1.8 0 003.6 0" />
+            </svg>
+          </Link>
         </div>
       </div>
 
-      <div className="hidden md:block">
-        <div className="mx-auto flex w-full max-w-[1480px] gap-4 px-3 py-3 lg:gap-5">
+      <div className="hidden min-h-screen md:block">
+        <div className="mx-auto flex h-full w-full max-w-[1480px] gap-4 px-3 py-3 lg:gap-5">
           <aside className="sticky top-3 flex h-[calc(100vh-1.5rem)] w-[250px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-gradient-to-b from-[#05593a] via-[#04543a] to-[#034a34] px-4 py-4 text-white shadow-[0_20px_45px_-30px_rgba(5,57,39,0.85)]">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2.5"
-              aria-label="Go to home page"
-            >
-              <Image
-                src="/nnpc-logo.svg"
-                alt="NNPC"
-                width={112}
-                height={36}
-                className="h-8 w-auto"
-              />
-            </Link>
+            <div className="flex items-center justify-between gap-2">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2.5"
+                aria-label="Go to home page"
+              >
+                <Image
+                  src="/nnpc-logo.svg"
+                  alt="NNPC"
+                  width={112}
+                  height={36}
+                  className="h-8 w-auto"
+                />
+              </Link>
+
+              <Link
+                href="/dashboard/notifications"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-emerald-50 transition hover:border-white/70 hover:bg-white/10"
+                aria-label="Notifications"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4.5 w-4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                >
+                  <path d="M10 3.6a3.4 3.4 0 00-3.4 3.4v1.1c0 1.8-.4 3.3-1.5 4.4l-.9.9h11.6l-.9-.9c-1.1-1.1-1.5-2.6-1.5-4.4V7A3.4 3.4 0 0010 3.6z" />
+                  <path d="M8.2 14.5a1.8 1.8 0 003.6 0" />
+                </svg>
+              </Link>
+            </div>
 
             <nav className="mt-6 space-y-1.5">
               {navItems.map((item) => {
@@ -229,8 +265,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </aside>
 
-          <main className="min-w-0 flex-1 pb-6">
-            {children}
+          <main className="min-w-0 flex flex-1 flex-col pb-6">
+            <div className="flex-1">{children}</div>
             {dashboardFooter}
           </main>
         </div>
