@@ -82,7 +82,7 @@ export default function VisitorDashboardLayout({ children }: { children: React.R
         <div className="mx-auto grid max-w-md grid-cols-3 items-end gap-1">
           <Link
             href="/"
-            className="flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-slate-500"
+            className="flex flex-col items-center gap-0.5 py-1 text-xs font-medium text-slate-500"
           >
             <svg
               viewBox="0 0 20 20"
@@ -99,7 +99,7 @@ export default function VisitorDashboardLayout({ children }: { children: React.R
 
           <Link
             href="/visitor/report"
-            className="flex flex-col items-center gap-0.5 py-0 text-[10px] font-medium text-slate-500"
+            className="flex flex-col items-center gap-0.5 py-0 text-xs font-medium text-slate-500"
           >
             <span className="-mt-5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#0a7e49] text-white shadow-[0_10px_18px_-10px_rgba(10,126,73,0.95)]">
               <svg
@@ -117,7 +117,7 @@ export default function VisitorDashboardLayout({ children }: { children: React.R
 
           <Link
             href="/visitor/reports"
-            className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium ${
+            className={`flex flex-col items-center gap-0.5 py-1 text-xs font-medium ${
               pathname.startsWith("/visitor/reports") ? "text-[#0a7e49]" : "text-slate-500"
             }`}
             aria-label="Reports"

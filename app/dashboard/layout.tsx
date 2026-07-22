@@ -242,7 +242,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="mx-auto grid max-w-md grid-cols-5 items-end gap-1">
           <Link
             href="/"
-            className="flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-slate-500"
+            className="flex flex-col items-center gap-0.5 py-1 text-xs font-medium text-slate-500"
           >
             <svg
               viewBox="0 0 20 20"
@@ -259,7 +259,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <Link
             href="/dashboard/reports"
-            className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium ${
+            className={`flex flex-col items-center gap-0.5 py-1 text-xs font-medium ${
               pathname.startsWith("/dashboard/reports") ? "text-[#0a7e49]" : "text-slate-500"
             }`}
           >
@@ -279,7 +279,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <Link
             href="/dashboard/report"
-            className="flex flex-col items-center gap-0.5 py-0 text-[10px] font-medium text-slate-500"
+            className="flex flex-col items-center gap-0.5 py-0 text-xs font-medium text-slate-500"
           >
             <span className="-mt-5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#0a7e49] text-white shadow-[0_10px_18px_-10px_rgba(10,126,73,0.95)]">
               <svg
@@ -296,23 +296,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
 
           <Link
-            href="/dashboard/profile"
-            className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium ${
-              pathname.startsWith("/dashboard/profile") ? "text-[#0a7e49]" : "text-slate-500"
+            href={session?.isAdmin ? "/dashboard/users" : "/dashboard/profile"}
+            className={`flex flex-col items-center gap-0.5 py-1 text-xs font-medium ${
+              session?.isAdmin
+                ? pathname.startsWith("/dashboard/users")
+                  ? "text-[#0a7e49]"
+                  : "text-slate-500"
+                : pathname.startsWith("/dashboard/profile")
+                  ? "text-[#0a7e49]"
+                  : "text-slate-500"
             }`}
-            aria-label="My Profile"
+            aria-label={session?.isAdmin ? "Users" : "My Profile"}
           >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <circle cx="10" cy="6.8" r="2.6" />
-              <path d="M4.8 15.8c1-2.2 2.9-3.3 5.2-3.3s4.2 1.1 5.2 3.3" />
-            </svg>
-            <span>My Profile</span>
+            {session?.isAdmin ? (
+              <svg
+                viewBox="0 0 20 20"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <circle cx="7" cy="7" r="2.3" />
+                <circle cx="13" cy="8" r="2" />
+                <path d="M3.8 15c.8-2 2.2-3 4.2-3s3.4 1 4.2 3" />
+                <path d="M11.6 15c.4-1.3 1.4-2.1 3-2.3" />
+              </svg>
+            ) : (
+              <svg
+                viewBox="0 0 20 20"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <circle cx="10" cy="6.8" r="2.6" />
+                <path d="M4.8 15.8c1-2.2 2.9-3.3 5.2-3.3s4.2 1.1 5.2 3.3" />
+              </svg>
+            )}
+            <span>{session?.isAdmin ? "Users" : "My Profile"}</span>
           </Link>
 
           <button
@@ -321,7 +342,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               void handleLogout();
             }}
             disabled={loggingOut}
-            className="flex flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-slate-500 disabled:opacity-60"
+            className="flex flex-col items-center gap-0.5 py-1 text-xs font-medium text-slate-500 disabled:opacity-60"
             aria-label="Logout"
           >
             <svg

@@ -311,7 +311,7 @@ export default function ReportsPage() {
 
     const timer = window.setInterval(() => {
       void loadReports(true);
-    }, 10000);
+    }, 300000);
 
     const onOnline = () => {
       void loadReports(true);
