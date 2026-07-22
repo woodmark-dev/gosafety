@@ -460,7 +460,7 @@ export default function ReportDetailPage({ params }: { params: Promise<{ inciden
       void loadActionLookups(incidentId);
     };
 
-    const timer = window.setInterval(refreshLookups, 300000);
+    const timer = window.setInterval(refreshLookups, 30000);
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         refreshLookups();

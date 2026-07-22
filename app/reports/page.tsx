@@ -89,6 +89,7 @@ export default function ReportsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [clearingQueue, setClearingQueue] = useState(false);
   const [error, setError] = useState("");
+  const [reportTableView, setReportTableView] = useState<"submitted" | "pending">("submitted");
 
   const [dashboardSearch, setDashboardSearch] = useState("");
   const [dashboardStatus, setDashboardStatus] = useState("all");
@@ -311,7 +312,7 @@ export default function ReportsPage() {
 
     const timer = window.setInterval(() => {
       void loadReports(true);
-    }, 300000);
+    }, 30000);
 
     const onOnline = () => {
       void loadReports(true);
@@ -377,7 +378,16 @@ export default function ReportsPage() {
 
         <section className="px-4 pb-6 pt-15 md:px-6 md:pb-7">
           <div className="-mt-4 grid grid-cols-2 gap-2 md:-mt-6 md:max-w-[620px] md:gap-3 md:pb-5">
-            <div className="rounded-2xl border border-[#def1e6] bg-gradient-to-br from-[#eaf8f0] to-[#def4e8] p-3 shadow-[0_10px_22px_-20px_rgba(6,53,28,0.55)] md:p-4">
+            <button
+              type="button"
+              onClick={() => setReportTableView("submitted")}
+              className={`rounded-2xl border bg-gradient-to-br p-3 text-left shadow-[0_10px_22px_-20px_rgba(6,53,28,0.55)] transition md:p-4 ${
+                reportTableView === "submitted"
+                  ? "border-[#0a7e49] from-[#eaf8f0] to-[#def4e8] ring-2 ring-[#0a7e49]/30"
+                  : "border-[#def1e6] from-[#f4fbf7] to-[#e9f6ef] hover:border-[#6db890]"
+              }`}
+              aria-pressed={reportTableView === "submitted"}
+            >
               <div className="flex items-center gap-2 md:gap-3">
                 <svg
                   viewBox="0 0 24 24"
@@ -400,8 +410,17 @@ export default function ReportsPage() {
                   </p>
                 </div>
               </div>
-            </div>
-            <div className="rounded-2xl border border-[#f7ebcc] bg-gradient-to-br from-[#fff8e8] to-[#fff2cd] p-3 shadow-[0_10px_22px_-20px_rgba(77,50,0,0.45)] md:p-4">
+            </button>
+            <button
+              type="button"
+              onClick={() => setReportTableView("pending")}
+              className={`rounded-2xl border bg-gradient-to-br p-3 text-left shadow-[0_10px_22px_-20px_rgba(77,50,0,0.45)] transition md:p-4 ${
+                reportTableView === "pending"
+                  ? "border-[#d69600] from-[#fff8e8] to-[#fff2cd] ring-2 ring-[#d69600]/30"
+                  : "border-[#f7ebcc] from-[#fffbf0] to-[#fff6dc] hover:border-[#e6bd54]"
+              }`}
+              aria-pressed={reportTableView === "pending"}
+            >
               <div className="flex items-center gap-2 md:gap-3">
                 <svg
                   viewBox="0 0 24 24"
@@ -422,7 +441,7 @@ export default function ReportsPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
           {isStaffDashboard && hasManageRole ? (
@@ -722,7 +741,7 @@ export default function ReportsPage() {
             </div>
           ) : null}
 
-          {!loading && !error && !showAdminDashboard ? (
+          {!loading && !error && !showAdminDashboard && reportTableView === "submitted" ? (
             items.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
                 No submitted reports yet.
@@ -909,72 +928,84 @@ export default function ReportsPage() {
             )
           ) : null}
 
-          {!loading && !error && queuedItems.length > 0 ? (
+          {!loading && !error && !showAdminDashboard && reportTableView === "pending" ? (
             <div className="mt-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold text-slate-900 md:text-base">
                   Pending Sync Queue
                 </h2>
-                <button
-                  type="button"
-                  disabled={clearingQueue}
-                  onClick={() => {
-                    void (async () => {
-                      setClearingQueue(true);
-                      try {
-                        await clearQueueAndRelatedBlobs();
-                        setQueuedItems([]);
-                      } finally {
-                        setClearingQueue(false);
-                      }
-                    })();
-                  }}
-                  className="rounded-md border border-rose-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-rose-700 disabled:opacity-60 md:text-xs"
-                >
-                  {clearingQueue ? "Clearing..." : "Clear pending queue"}
-                </button>
+                {queuedItems.length > 0 ? (
+                  <button
+                    type="button"
+                    disabled={clearingQueue}
+                    onClick={() => {
+                      void (async () => {
+                        setClearingQueue(true);
+                        try {
+                          await clearQueueAndRelatedBlobs();
+                          setQueuedItems([]);
+                        } finally {
+                          setClearingQueue(false);
+                        }
+                      })();
+                    }}
+                    className="rounded-md border border-rose-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-rose-700 disabled:opacity-60 md:text-xs"
+                  >
+                    {clearingQueue ? "Clearing..." : "Clear pending queue"}
+                  </button>
+                ) : null}
               </div>
               <p className="mt-1 text-xs text-slate-500 md:text-sm">
                 These reports are saved locally and will submit automatically when connectivity and
                 server access are available.
               </p>
 
-              <div className="mt-3 overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-200 text-xs md:text-sm">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">Draft ID</th>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">Title</th>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">Status</th>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">Attempts</th>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">
-                        Last Error
-                      </th>
-                      <th className="px-3 py-2 text-left font-semibold text-slate-700">
-                        Queued At
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {queuedItems.map((item) => (
-                      <tr key={item.id}>
-                        <td className="px-3 py-2 font-mono text-xs text-slate-700">
-                          {item.draft.id}
-                        </td>
-                        <td className="px-3 py-2 text-slate-700">
-                          {item.draft.details.title || "-"}
-                        </td>
-                        <td className="px-3 py-2 uppercase text-amber-700">{item.status}</td>
-                        <td className="px-3 py-2 text-slate-700">{item.attempts}</td>
-                        <td className="px-3 py-2 text-slate-600">{item.lastError || "-"}</td>
-                        <td className="px-3 py-2 text-slate-600">
-                          {new Date(item.createdAt).toLocaleString()}
-                        </td>
+              {queuedItems.length === 0 ? (
+                <div className="mt-3 rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+                  No pending sync items.
+                </div>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="min-w-full divide-y divide-slate-200 text-xs md:text-sm">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">
+                          Draft ID
+                        </th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Title</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">Status</th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">
+                          Attempts
+                        </th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">
+                          Last Error
+                        </th>
+                        <th className="px-3 py-2 text-left font-semibold text-slate-700">
+                          Queued At
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {queuedItems.map((item) => (
+                        <tr key={item.id}>
+                          <td className="px-3 py-2 font-mono text-xs text-slate-700">
+                            {item.draft.id}
+                          </td>
+                          <td className="px-3 py-2 text-slate-700">
+                            {item.draft.details.title || "-"}
+                          </td>
+                          <td className="px-3 py-2 uppercase text-amber-700">{item.status}</td>
+                          <td className="px-3 py-2 text-slate-700">{item.attempts}</td>
+                          <td className="px-3 py-2 text-slate-600">{item.lastError || "-"}</td>
+                          <td className="px-3 py-2 text-slate-600">
+                            {new Date(item.createdAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ) : null}
         </section>
