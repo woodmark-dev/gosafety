@@ -62,6 +62,17 @@ function severityTone(code: string | null) {
   return "bg-slate-100 text-slate-700";
 }
 
+function severityLabel(code: string) {
+  if (code === "unspecified") {
+    return "Unspecified";
+  }
+
+  return code
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export default function ReportsPage() {
   const pathname = usePathname();
   const router = useRouter();
@@ -186,11 +197,14 @@ export default function ReportsPage() {
 
   const dashboardSummary = useMemo(() => {
     const statusCounts = new Map<string, number>();
+    const severityCounts = new Map<string, number>();
     let returnedCount = 0;
     let highSeverityCount = 0;
 
     for (const item of dashboardItems) {
       statusCounts.set(item.status_code, (statusCounts.get(item.status_code) ?? 0) + 1);
+      const severityKey = (item.severity_code?.toLowerCase() || "unspecified").trim();
+      severityCounts.set(severityKey, (severityCounts.get(severityKey) ?? 0) + 1);
       if (item.is_returned_for_reassignment) {
         returnedCount += 1;
       }
@@ -200,17 +214,68 @@ export default function ReportsPage() {
     }
 
     const openCount = dashboardItems.filter((item) => item.status_code !== "resolved").length;
+    const severityOrder = ["critical", "high", "medium", "low", "unspecified"];
+    const severityPalette = ["#e11d48", "#f97316", "#f59e0b", "#16a34a", "#64748b"];
+
+    const severityBreakdown = Array.from(severityCounts.entries())
+      .sort((a, b) => {
+        const aRank = severityOrder.indexOf(a[0]);
+        const bRank = severityOrder.indexOf(b[0]);
+        const safeARank = aRank === -1 ? severityOrder.length : aRank;
+        const safeBRank = bRank === -1 ? severityOrder.length : bRank;
+
+        if (safeARank !== safeBRank) {
+          return safeARank - safeBRank;
+        }
+
+        return b[1] - a[1];
+      })
+      .map(([code, count], index) => ({
+        code,
+        label: severityLabel(code),
+        count,
+        color: severityPalette[index % severityPalette.length],
+      }));
 
     return {
       total: dashboardItems.length,
       open: openCount,
       returned: returnedCount,
       highSeverity: highSeverityCount,
+      severityBreakdown,
       topStatuses: Array.from(statusCounts.entries())
         .sort((a, b) => b[1] - a[1])
         .slice(0, 4),
     };
   }, [dashboardItems]);
+
+  const severityChart = useMemo(() => {
+    const total = dashboardSummary.severityBreakdown.reduce((sum, item) => sum + item.count, 0);
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    let cumulative = 0;
+
+    const slices = dashboardSummary.severityBreakdown.map((item) => {
+      const value = total > 0 ? item.count / total : 0;
+      const dashLength = value * circumference;
+      const dashOffset = -cumulative;
+      cumulative += dashLength;
+
+      return {
+        ...item,
+        percentage: value * 100,
+        dashLength,
+        dashOffset,
+      };
+    });
+
+    return {
+      total,
+      radius,
+      circumference,
+      slices,
+    };
+  }, [dashboardSummary.severityBreakdown]);
 
   useEffect(() => {
     if (isFulfillmentStaff && (scope === "all" || scope === "mine")) {
@@ -445,7 +510,7 @@ export default function ReportsPage() {
           </div>
 
           {isStaffDashboard && hasManageRole ? (
-            <div className="mb-4 flex flex-wrap items-center gap-2">
+            <div className="mb-4 mt-4 flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -570,6 +635,80 @@ export default function ReportsPage() {
                   <p className="mt-1 text-xl font-bold text-indigo-900">
                     {dashboardSummary.returned}
                   </p>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-4 md:col-span-2 xl:col-span-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Severity Mix
+                  </p>
+
+                  {severityChart.total > 0 ? (
+                    <div className="mt-4 flex flex-col items-center gap-5 md:flex-row md:justify-center md:gap-8">
+                      <div className="relative h-32 w-32 shrink-0 md:h-44 md:w-44">
+                        <svg
+                          viewBox="0 0 120 120"
+                          className="h-32 w-32 md:h-44 md:w-44"
+                          aria-hidden="true"
+                        >
+                          <circle
+                            cx="60"
+                            cy="60"
+                            r={severityChart.radius}
+                            fill="none"
+                            stroke="#e2e8f0"
+                            strokeWidth="16"
+                          />
+                          {severityChart.slices.map((slice) => (
+                            <circle
+                              key={slice.code}
+                              cx="60"
+                              cy="60"
+                              r={severityChart.radius}
+                              fill="none"
+                              stroke={slice.color}
+                              strokeWidth="16"
+                              strokeLinecap="butt"
+                              strokeDasharray={`${slice.dashLength} ${severityChart.circumference}`}
+                              strokeDashoffset={slice.dashOffset}
+                              transform="rotate(-90 60 60)"
+                            />
+                          ))}
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 md:text-xs">
+                            Total
+                          </span>
+                          <span className="text-lg font-bold text-slate-900 md:text-2xl">
+                            {severityChart.total}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-full max-w-sm space-y-1.5 text-[11px] text-slate-700 md:text-sm">
+                        {severityChart.slices.map((slice) => (
+                          <div
+                            key={`${slice.code}-legend`}
+                            className="flex items-center justify-between gap-2"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="inline-block h-2.5 w-2.5 rounded-full"
+                                style={{ backgroundColor: slice.color }}
+                                aria-hidden="true"
+                              />
+                              <span>{slice.label}</span>
+                            </div>
+                            <span className="font-semibold text-slate-900">
+                              {slice.count} ({slice.percentage.toFixed(0)}%)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-slate-500">
+                      No severity data for selected filters.
+                    </p>
+                  )}
                 </div>
               </div>
 
